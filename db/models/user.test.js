@@ -1,8 +1,8 @@
 'use strict'
 
 const db = require('APP/db')
-    , {User} = db
-    , {expect} = require('chai')
+  , { User } = db
+  , { expect } = require('chai')
 
 /* global describe it before afterEach */
 
@@ -20,5 +20,16 @@ describe('User', () => {
       User.create({ password: 'ok' })
         .then(user => user.authenticate('not ok'))
         .then(result => expect(result).to.be.false))
-  })
-})
+
+    it("has a getOrders method", () =>
+      (typeof (User.getOrders).should.equals('function'))
+    )
+  }
+
+
+// Association methods we would want:
+// get Orders by userId (Order.belongsToUser)
+// get Reviews by userId
+// get Reviews by productId
+
+

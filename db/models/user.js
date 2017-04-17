@@ -36,11 +36,12 @@ module.exports = db => db.define('users', {
 })
 
 
-module.exports.associations = (User, {OAuth, Product, Favorite, Order, UserOrder}) => {
+module.exports.associations = (User, {OAuth, Product, Favorite, Order, OrderItem}) => {
   User.hasOne(OAuth)
+  User.hasMany(Order)
   User.belongsToMany(Product, {as: 'favorites', through: Favorite})
   // Necessary to access previously created join table that contains the quantity of products ordered
-  User.belongsToMany(Order, {through: UserOrder})
+  // User.belongsToMany(Order, {through: OrderItem})
 }
 // do we need to add reciprocal associations, e.g. User.hasMany(Review) ? -- would give us methods: setReviews getReviews addReviews addReview
 
