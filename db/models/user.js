@@ -42,6 +42,8 @@ module.exports.associations = (User, {OAuth, Product, Favorite, Order, UserOrder
   // Necessary to access previously created join table that contains the quantity of products ordered
   User.belongsToMany(Order, {through: UserOrder})
 }
+// do we need to add reciprocal associations, e.g. User.hasMany(Review) ? -- would give us methods: setReviews getReviews addReviews addReview
+
 
 function setEmailAndPassword(user) {
   user.email = user.email && user.email.toLowerCase()
