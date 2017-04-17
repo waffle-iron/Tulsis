@@ -21,8 +21,8 @@ module.exports = require('express').Router()
       .then(orders => res.json(orders))
       .catch(next))
 
-  //all orders for a user:
-  //TODO filter for orders by userId
+
+//GET route for order by user
   .get('/:userId',
   mustBeLoggedIn,
   (req, res, next) =>
@@ -36,12 +36,14 @@ module.exports = require('express').Router()
     .catch(next)
   )
 
+//POST route to create an order
   .post('/',
   (req, res, next) =>
     Order.create(req.body)
       .then(order => res.status(201).json(order))
       .catch(next))
 
+//GET route to find order by ID
   .get('/:id',
   mustBeLoggedIn,
   (req, res, next) =>
@@ -49,6 +51,7 @@ module.exports = require('express').Router()
       .then(order => res.json(order))
       .catch(next))
 
+//PUT route to update an order from the request body
   .put('/:id',
   (req, res, next) =>
     Order.update(req.body, {
@@ -70,23 +73,22 @@ module.exports = require('express').Router()
     .catch(next)
   )
 
-// router.put('/:id', function(req, res, next) {
-//   Book.update(req.body, {
-//     where: {
-//       id: req.params.id,
-//     },
-//     returning: true,
-//   }).then(function(allReturned) {
-//     return allReturned[1][0];//herereq
-//   }).then(function(actualUpdatedBook) {
-//     if (actualUpdatedBook === undefined) {
-//       res.status(500)
-//       next();
-//     } else {
-//       res.send(actualUpdatedBook);
-//     }
-//   }).catch(next);
-// });
+//DELETE route to remove an order
+  .delete('/:id', (req, res, next) =>
+  Order.destroy({
+    where:{
+      id: req.params.id,
+    }
+  })
+  .then((result) =>
+    if (result === 0) {
+      res.sendStatus(404);
+    } else {
+      res.sendStatus(204);
+    }
+  )
+  .catch(next)
+  );
 
 // TODOS
 // GET
