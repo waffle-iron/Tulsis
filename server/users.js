@@ -3,7 +3,7 @@
 const db = require('APP/db')
 const User = db.model('users')
 
-const { mustBeLoggedIn, forbidden, mustBeAdmin, selfOnly } = require('./auth.filters')
+const { mustBeLoggedIn, forbidden, selfOnly } = require('./auth.filters')
 
 module.exports = require('express').Router()
   .get('/',
@@ -13,7 +13,7 @@ module.exports = require('express').Router()
   // If you want to only let admins list all the users, then you'll
   // have to add a role column to the users table to support
   // the concept of admin users.
-  forbidden('listing users is not allowed'),
+  // mustBeAdmin,
   (req, res, next) =>
     User.findAll()
       .then(users => res.json(users))
@@ -29,14 +29,14 @@ module.exports = require('express').Router()
     User.findById(req.params.id)
       .then(user => res.json(user))
       .catch(next))
-  .delete('/:id', mustBeAdmin, (req, res, next) =>
-  User.destroy({
-    where: {
-      id: req.params.id,
-    }
-  })
-  .then((result) => result === 0 ? res.sendStatus(404) : res.sendStatus(204))
-  .catch(next)
+  .delete('/:id', (req, res, next) =>
+    User.destroy({
+      where: {
+        id: req.params.id,
+      }
+    })
+      .then((result) => result === 0 ? res.sendStatus(404) : res.sendStatus(204))
+      .catch(next)
   )
   .put('/:id',
   selfOnly,
@@ -47,23 +47,23 @@ module.exports = require('express').Router()
       },
       returning: true,
     })
-  .then(allReturned => allReturned[1][0])
-  .then(actualUser => {
-    actualUser === undefined ? res.sendStatus(500) : res.send(actualUser)
-  })
-  .catch(next)
+      .then(allReturned => allReturned[1][0])
+      .then(actualUser => {
+        actualUser === undefined ? res.sendStatus(500) : res.send(actualUser)
+      })
+      .catch(next)
   )
 
 // TODOS
 // GET
-// Find all users
-// Find users by ID
+// X Find all users (admins)
+// X Find users by ID
 
 // POST
-// Add a user
+// X Add a user
 
 // UPDATE
-// admin and only currently logged-in user: update user
+// X admin and only currently logged-in user: update user
 
 // DELETE
-// admins: delete a user
+// X admins: delete a user

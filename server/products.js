@@ -1,23 +1,9 @@
-// TODOS
-// GET
-// Find all products
-// Find products by ID
-
-// POST
-// Add a product
-
-// UPDATE
-// admin: update product
-
-// DELETE
-// admins: delete a product
-
 'use strict'
 
 const db = require('APP/db')
 const Product = db.model('Products')
 
-const { mustBeLoggedIn, forbidden } = require('./auth.filters')
+const { mustBeLoggedIn, forbidden, selfOnly } = require('./auth.filters')
 
 module.exports = require('express').Router()
   .get('/', (req, res, next) =>
@@ -28,7 +14,7 @@ module.exports = require('express').Router()
     // have to add a role column to the users table to support
     // the concept of admin users.
     Product.findAll()
-      .then(Products => res.json(products))
+      .then(products => res.json(products))
       .catch(next))
   .post('/',
   (req, res, next) =>
@@ -40,3 +26,39 @@ module.exports = require('express').Router()
     Product.findById(req.params.id)
       .then(product => res.json(product))
       .catch(next))
+
+  .put('/:id', (req, res, next) =>
+    Product.update(req.body, {
+      where: {
+        id: req.params.id
+      },
+      returning: true
+    })
+      .then(response => response[1][0])
+      .then((actualResponse) => res.send(actualResponse))
+      .catch(next)
+  )
+
+  .delete('/:id', (req, res, next) =>
+    Product.destroy({
+      where: {
+        id: req.params.id
+      }
+    })
+      .then((result) => result === 0 ? res.sendStatus(404) : res.sendStatus(204))
+      .catch(next)
+  )
+
+// TODOS
+// GET
+// X Find all products
+// X Find products by ID
+
+// POST
+// X Add a product
+
+// UPDATE
+// X admin: update product
+
+// DELETE
+// X admins: delete a product

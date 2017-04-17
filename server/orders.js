@@ -3,7 +3,7 @@
 const db = require('APP/db')
 const Order = db.model('orders')
 const User = db.model('users')//for orders by a user
-const { mustBeLoggedIn, forbidden } = require('./auth.filters')
+const { mustBeLoggedIn, forbidden, selfOnly } = require('./auth.filters')
 
 module.exports = require('express').Router()
   .get('/',
@@ -13,7 +13,7 @@ module.exports = require('express').Router()
   // If you want to only let admins list all the orders, then you'll
   // have to add a role column to the orders table to support
   // the concept of admin orders.
-  mustBeLoggedIn,
+
   // admin should see everything,
   // TODO create an admin filter!
   (req, res, next) =>
@@ -21,10 +21,9 @@ module.exports = require('express').Router()
       .then(orders => res.json(orders))
       .catch(next))
 
-
-//GET route for order by user
+  //GET route for order by user
   .get('/:userId',
-  mustBeLoggedIn,
+  selfOnly,
   (req, res, next) =>
     Order.find({
       where: {
@@ -32,26 +31,26 @@ module.exports = require('express').Router()
         userId: req.params.userId
       }
     })
-    .then((orders) => res.json(orders))
-    .catch(next)
+      .then((orders) => res.json(orders))
+      .catch(next)
   )
 
-//POST route to create an order
+  //POST route to create an order
   .post('/',
   (req, res, next) =>
     Order.create(req.body)
       .then(order => res.status(201).json(order))
       .catch(next))
 
-//GET route to find order by ID
+  //GET route to find order by ID
   .get('/:id',
-  mustBeLoggedIn,
+  selfOnly,
   (req, res, next) =>
     Order.findById(req.params.id)
       .then(order => res.json(order))
       .catch(next))
 
-//PUT route to update an order from the request body
+  //PUT route to update an order from the request body
   .put('/:id',
   (req, res, next) =>
     Order.update(req.body, {
@@ -60,46 +59,48 @@ module.exports = require('express').Router()
       },
       returning: true,
     })
-    .then((allReturned) =>
-      return allReturned[1][0]
-    )
-    .then(updatedOrder =>
-      if (updatedOrder === undefined) {
-        res.status(500)
-        next();
-      } else {
-        res.send(updatedOrder)
+      .then((allReturned) =>
+        allReturned[1][0]
+      )
+      .then(updatedOrder => {
+        if (updatedOrder === undefined) {
+          res.status(500)
+          next();
+        } else {
+          res.send(updatedOrder)
+        }
       })
-    .catch(next)
+      .catch(next)
+
   )
 
-//DELETE route to remove an order
+  //DELETE route to remove an order
   .delete('/:id', (req, res, next) =>
-  Order.destroy({
-    where:{
-      id: req.params.id,
-    }
-  })
-  .then((result) =>
-    if (result === 0) {
-      res.sendStatus(404);
-    } else {
-      res.sendStatus(204);
-    }
-  )
-  .catch(next)
+    Order.destroy({
+      where: {
+        id: req.params.id,
+      }
+    })
+      .then((result) => {
+        if (result === 0) {
+          res.sendStatus(404);
+        } else {
+          res.sendStatus(204);
+        }
+      })
+      .catch(next)
   );
 
 // TODOS
 // GET
-// Find all orders
-// Find orders by ID
+// X Find all orders
+// X Find orders by ID
 
 // POST
-// Add a order
+// X Add a order
 
 // UPDATE
-// admin and only currently logged-in order: update order
+// X admin and only currently logged-in order: update order
 
 // DELETE
-// admins: delete a order
+// X admins: delete a order

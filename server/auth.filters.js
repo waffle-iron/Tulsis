@@ -1,4 +1,8 @@
+const db = require('APP/db')
+const User = db.model('users')
+
 const mustBeLoggedIn = (req, res, next) => {
+  console.log('REQ FROM MUSTBELOGGEDIN: ', req.user)
   if (!req.user) {
     return res.status(401).send('You must be logged in')
   }
@@ -16,6 +20,8 @@ const forbidden = message => (req, res) => {
   res.status(403).send(message)
 }
 
-// Feel free to add more filters here (suggested: something that keeps out non-admins)
-// TODO const mustBeAdmin = ....
-module.exports = {mustBeLoggedIn, selfOnly, forbidden}
+const mustBeAdmin = action => (req, res, next) => {
+  User.findById(req.params.id)
+}
+
+module.exports = { mustBeLoggedIn, selfOnly, forbidden, mustBeAdmin }
