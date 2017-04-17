@@ -3,7 +3,7 @@
 const db = require('APP/db')
 const User = db.model('users')
 
-const { mustBeLoggedIn, forbidden } = require('./auth.filters')
+const { mustBeLoggedIn, forbidden, mustBeAdmin, selfOnly } = require('./auth.filters')
 
 module.exports = require('express').Router()
   .get('/',
@@ -29,6 +29,30 @@ module.exports = require('express').Router()
     User.findById(req.params.id)
       .then(user => res.json(user))
       .catch(next))
+  .delete('/:id', mustBeAdmin, (req, res, next) =>
+  User.destroy({
+    where: {
+      id: req.params.id,
+    }
+  })
+  .then((result) => result === 0 ? res.sendStatus(404) : res.sendStatus(204))
+  .catch(next)
+  )
+  .put('/:id',
+  selfOnly,
+  (req, res, next) =>
+    User.update(req.body, {
+      where: {
+        id: req.params.id,
+      },
+      returning: true,
+    })
+  .then(allReturned => allReturned[1][0])
+  .then(actualUser => {
+    actualUser === undefined ? res.sendStatus(500) : res.send(actualUser)
+  })
+  .catch(next)
+  )
 
 // TODOS
 // GET
