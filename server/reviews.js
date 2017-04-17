@@ -83,7 +83,7 @@ module.exports = require('express').Router()
 
   )
 
-  // DELETE route to remove an order
+  // DELETE route to remove a review
   .delete('/:id', (req, res, next) =>
     Review.destroy({
       where: {
