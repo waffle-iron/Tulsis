@@ -10,7 +10,7 @@ module.exports = db => db.define('users', {
     type: STRING,
     validate: {
       isEmail: true,
-      notEmpty: true,
+      notEmpty: true
     }
   },
 
@@ -35,9 +35,12 @@ module.exports = db => db.define('users', {
   }
 })
 
-module.exports.associations = (User, {OAuth, Thing, Favorite}) => {
+
+module.exports.associations = (User, {OAuth, Product, Favorite, Order, UserOrder}) => {
   User.hasOne(OAuth)
-  User.belongsToMany(Thing, {as: 'favorites', through: Favorite})
+  User.belongsToMany(Product, {as: 'favorites', through: Favorite})
+  // Necessary to access previously created join table that contains the quantity of products ordered
+  User.belongsToMany(Order, {through: UserOrder})
 }
 
 function setEmailAndPassword(user) {
