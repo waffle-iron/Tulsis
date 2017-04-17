@@ -21,10 +21,11 @@ describe('User', () => {
         .then(user => user.authenticate('not ok'))
         .then(result => expect(result).to.be.false))
 
-    it("has a getOrders method", () =>
-      (typeof (User.getOrders).should.equals('function'))
+    it('has a getOrders method', () =>
+      (typeof (User.getOrders)).should.equals('function')
     )
-  }
+  })
+})
 
 
 // Association methods we would want:
