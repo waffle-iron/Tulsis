@@ -18,7 +18,7 @@ const app = require('APP')
       Product: require('./product'),
       Order: require('./order'),
       OrderItem: require('./orderItem'),
-      Review: require('./orderItem'),
+      Review: require('./review'),
       Favorite: require('./favorite'),
       // ---------- Add new models here ----------
     }
