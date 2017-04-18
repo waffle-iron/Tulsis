@@ -10,7 +10,7 @@ module.exports = db => db.define('users', {
     type: STRING,
     validate: {
       isEmail: true,
-      notEmpty: true,
+      notEmpty: true
     }
   },
 
@@ -35,10 +35,16 @@ module.exports = db => db.define('users', {
   }
 })
 
-module.exports.associations = (User, {OAuth, Thing, Favorite}) => {
+
+module.exports.associations = (User, {OAuth, Product, Favorite, Order, OrderItem}) => {
   User.hasOne(OAuth)
-  User.belongsToMany(Thing, {as: 'favorites', through: Favorite})
+  User.hasMany(Order)
+  User.belongsToMany(Product, {as: 'favorites', through: Favorite})
+  // Necessary to access previously created join table that contains the quantity of products ordered
+  // User.belongsToMany(Order, {through: OrderItem})
 }
+// do we need to add reciprocal associations, e.g. User.hasMany(Review) ? -- would give us methods: setReviews getReviews addReviews addReview
+
 
 function setEmailAndPassword(user) {
   user.email = user.email && user.email.toLowerCase()
