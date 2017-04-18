@@ -33,7 +33,6 @@ describe.only('/api/users', () => {
         .catch(console.error)
     })
 
-
     it('updates a user', () => {
       // Why does this complete before the 'before' block completes?
       console.log('Were searching for user', id)
@@ -77,5 +76,29 @@ describe.only('/api/users', () => {
               email: 'eve@interloper.com'
             })))
       }))
+
+    describe('DELETE /:id', () => {
+      let id
+      before(function() {
+        return User.create({
+          email: 'deleteme@gmail.com',
+          password: 'aabbcc'
+        })
+          .then(user => {
+            console.log('we made the user to be deleted', user.id)
+            id = user.id
+          })
+          .catch(console.error)
+      })
+      it('deletes a user', () => {
+        // Why does this complete before the 'before' block completes?
+        console.log('Were searching for user', id)
+        request(app)
+          .delete(`/api/users/${id}`)
+          .expect(204)
+          .catch(console.error)
+      }
+      )
+    })
   })
 })
