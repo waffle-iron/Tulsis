@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/TinaHeiligers/Tulsis.png?label=ready&title=Ready)](https://waffle.io/TinaHeiligers/Tulsis)
 # Hi, I'm bones
 
 I'm a happy little skeleton. You can clone me to use as a starter on your projects!
