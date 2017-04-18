@@ -29,7 +29,7 @@ describe.only('/api/products', () => {
           // console.log('We made a product', product)
           id = product.id
         })
-        // .catch(console.error)
+      // .catch(console.error)
     })
 
     describe('when a product exists', () =>
@@ -42,58 +42,49 @@ describe.only('/api/products', () => {
             expect(res.body.title).to.be.equal('Test Shoes')
           })
           .catch(console.error)
-     ))
+      ))
   })
 
   describe('POST', () =>
-    describe('only admin can add a product', () => {
-      it('creates a product', () =>
-        request(app)
-          .post('/api/products')
-          .send({
-            name: 'booties',
-            price: 12
-          })
-          .expect(201))
+    it('creates a product', () =>
+      request(app)
+        .post('/api/products')
+        .send({
+          title: 'booties',
+          price: 12
+        })
+        .expect(201)
+    ))
 
-      it('redirects to the product it just made', () =>
-        request(app)
-          .post('/api/products')
-          .send({
-            name: 'booties',
-            price: 12
-          })
-          .redirects(1)
-          .then(res => expect(res.body).to.contain({
-            name: 'booties',
-            price: 12
-          })))
-    }))
+  describe('PUT', () => {
+    let id
+    before(() => {
+      return Product.create({
+        title: 'booties',
+        price: 12
+      })
+        .then(product => {
+          // console.log('We made a product', product)
+          id = product.id
+        })
+      // .catch(console.error)
+    })
+    it('updates a product', () => {
+      request(app)
+        .put(`/api/products/${id}`)
+        .send({
+          title: 'new booties',
+          price: 24
+        })
+        .expect(200)
+        .then(res => {
+          expect(res.body.title).to.be.equal('new booties')
+        })
+    }
 
-  describe('PUT', () =>
-    describe('only admin can edit a product', () => {
-      it('updates a product', () =>
-        request(app)
-          .put('/api/products/1')
-          .send({
-            name: 'new booties',
-            price: 24
-          })
-          .expect(200))
-
-      it('redirects to the product it just made', () =>
-        request(app)
-          .put('/api/products/1')
-          .send({
-            name: 'new booties',
-            price: 24
-          })
-          .redirects(1)
-          .then(res => expect(res.body).to.contain({
-            name: 'new booties',
-            price: 24
-          })))
-    }))
+    )
+  }
+  )
 
   // describe('DELETE', () =>
   //   describe('only admin can delete a product', () => {
@@ -101,14 +92,14 @@ describe.only('/api/products', () => {
   //       request(app)
   //         .post('/api/products')
   //         .send({
-  //           name: 'deleteMe',
+  //           title: 'deleteMe',
   //           price: 500
   //         }))
   //     it('deletes a product', () =>
   //       request(app)
   //         .delete('/api/products')
   //         .send({
-  //           name: 'booties',
+  //           title: 'booties',
   //           price: 12
   //         })
   //         .expect(201))

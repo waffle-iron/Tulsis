@@ -30,17 +30,21 @@ module.exports = require('express').Router()
       )
       .catch(next))
 
-  .put('/:id', (req, res, next) =>
+  .put('/:id', (req, res, next) => {
     Product.update(req.body, {
       where: {
         id: req.params.id
       },
       returning: true
     })
-      .then(response => response[1][0])
-      .then((actualResponse) => res.send(actualResponse))
+      .then(response => {
+        return response[1][0]
+      })
+      .then((actualResponse) => {
+        res.send(actualResponse)
+      })
       .catch(next)
-  )
+  })
 
   .delete('/:id', (req, res, next) =>
     Product.destroy({
