@@ -2,28 +2,47 @@ const request = require('supertest')
   , { expect } = require('chai')
   , db = require('APP/db')
   , app = require('./start')
+  , Product = db.model('products')
 
 /* global describe it before afterEach */
 
-describe('/api/products', () => {
+describe.only('/api/products', () => {
   before('Await database sync', () => db.didSync)
   afterEach('Clear the tables', () => db.truncate({ cascade: true }))
 
   describe('GET /', () =>
-    describe('when there are no products', () =>
-      it('fails with a 403 (Not found)', () =>
+    describe('when there are or are not products', () =>
+      it('responds with a status of 200 with products or an empty set', () =>
         request(app)
           .get(`/api/products`)
-          .expect(403)
+          .expect(200)
       )))
 
-  describe('GET /:id', () =>
-    describe('when product does not exist', () =>
-      it('fails with a 403 (Not found)', () =>
+  describe('GET /:id', () => {
+    let id
+
+    before(() => {
+      return Product.create({
+        title: 'Test Shoes'
+      })
+        .then(product => {
+          // console.log('We made a product', product)
+          id = product.id
+        })
+        // .catch(console.error)
+    })
+
+    describe('when a product exists', () =>
+      it('it returns the product', () =>
         request(app)
-          .get(`/api/products/945`)
-          .expect(403)
-      )))
+          .get(`/api/products/${id}`)
+          // .expect(200)
+          .then(product => {
+            expect(product.title).to.be.equal('Test Shoes')
+          })
+          .catch(console.error)
+     ))
+  })
 
   describe('POST', () =>
     describe('only admin can add a product', () => {
