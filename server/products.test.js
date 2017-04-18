@@ -36,9 +36,10 @@ describe.only('/api/products', () => {
       it('it returns the product', () =>
         request(app)
           .get(`/api/products/${id}`)
-          // .expect(200)
-          .then(product => {
-            expect(product.title).to.be.equal('Test Shoes')
+          .expect(200)
+          .then(res => {
+            // console.log("Here's our result", res.body)
+            expect(res.body.title).to.be.equal('Test Shoes')
           })
           .catch(console.error)
      ))
