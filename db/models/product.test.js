@@ -1,10 +1,10 @@
 'use strict'
 
-import chai from 'chai';
-import chaiProperties from 'chai-properties';
-import chaiThings from 'chai-things';
-chai.use(chaiProperties);
-chai.use(chaiThings);
+import chai from 'chai'
+import chaiProperties from 'chai-properties'
+import chaiThings from 'chai-things'
+chai.use(chaiProperties)
+chai.use(chaiThings)
 
 const db = require('APP/db')
   , { Product } = db
@@ -20,18 +20,17 @@ describe('Product', () => {
   var product
 
   describe('product association methods', () => {
-    before('Create product instance', () => {
-      return Product.create({
+    before('Create product instance', () =>
+      Product.create({
         title: 'booties',
         description: 'cute booties for your baby',
         price: 12,
-        photoUrl: 'img.jpg', // Non relative path functionality? Ask Ashi or someone else
+        photoUrl: 'img.jpg',
         quantity: 1,
-        // Double check that this is a valid way of creating an array of SEQUELIZE.Strings
         category: ['pink']
       })
         .then((_product) => product = _product)
-    })
+    )
     it('has setLovers method', () => {
       expect(product.setLovers).to.be.a('function')
     })
@@ -49,7 +48,13 @@ describe('Product', () => {
       return product.validate()
         .then(err => {
           expect(err).to.be.an('object')
+          expect(err.errors).to.contain.a.thing.with.properties({
+            path: 'title',
+            type: 'notNull Violation'
+          })
         })
     })
   })
 })
+
+// could add more tests once models have more methods

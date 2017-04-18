@@ -1,10 +1,10 @@
 'use strict'
 
-import chai from 'chai';
-import chaiProperties from 'chai-properties';
-import chaiThings from 'chai-things';
-chai.use(chaiProperties);
-chai.use(chaiThings);
+import chai from 'chai'
+import chaiProperties from 'chai-properties'
+import chaiThings from 'chai-things'
+chai.use(chaiProperties)
+chai.use(chaiThings)
 
 const db = require('APP/db')
   , { User } = db
@@ -30,34 +30,33 @@ describe('User', () => {
       User.create({ password: 'ok' })
         .then(user => user.authenticate('not ok'))
         .then(result => expect(result).to.be.false))
+  })
 
-    describe('user association methods', () => {
-      before('Create user instance', () => {
-        return User.create({ name: 'name', email: 'email@email.com' })
-          .then((_user) => user = _user)
-      })
+  describe('user association methods', () => {
+    before('Create user instance', () =>
+      User.create({ name: 'name', email: 'email@email.com' })
+        .then((_user) => user = _user)
+    )
 
-      it('has a getOrders method', () => {
-        expect(user.getOrders).to.be.a('function')
-      })
+    it('has a getOrders method', () => {
+      expect(user.getOrders).to.be.a('function')
     })
+  })
 
-    describe('user model validation', () => {
-      it('throws a validation error if user is created without a valid email address', () => {
-        const user = User.build({ name: 'name', email: 'I am not an email address' })
-        return user.validate()
-          .then(err => {
-            expect(err).to.be.an('object');
-            // npm texpect(err.errors).to.contain.a.thing.with.properties({
-            //   path: 'email',
-            //   type: 'isEmail Violation'
-            // })
+  describe('user model validation', () => {
+    it('throws a validation error if user is created without a valid email address', () => {
+      const user = User.build({ name: 'name', email: 'I am not an email address' })
+      return user.validate()
+        .then(err => {
+          expect(err).to.be.an('object')
+          expect(err.errors).to.contain.a.thing.with.properties({
+            path: 'email',
+            type: 'Validation error'
           })
-      })
+        })
     })
   })
 })
-
 
 // Association methods we would want:
 // get Orders by userId (Order.belongsToUser)
